@@ -24,6 +24,8 @@ public class TaskDetailActivity extends AppCompatActivity {
     @BindView(R.id.fab_edit_task_done)
     FloatingActionButton actionTaskBtn;
     TaskInfoFragment taskInfoFragment;
+    private String mTaskId;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +35,7 @@ public class TaskDetailActivity extends AppCompatActivity {
         initView();
     }
 
-    private void initView(){
+    private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -43,14 +45,26 @@ public class TaskDetailActivity extends AppCompatActivity {
         taskInfoFragment = new TaskInfoFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.contentFrame,taskInfoFragment);
+        fragmentTransaction.replace(R.id.contentFrame, taskInfoFragment);
         fragmentTransaction.commit();
 
+        String taskid = getIntent().getStringExtra("taskid");
+        if(taskid!=null && !"".equals(taskid)){
+            mTaskId = taskid;
+        }else{
+            mTaskId = null;
+        }
+
         actionTaskBtn.setImageResource(R.drawable.ic_done);
-        actionTaskBtn.setOnClickListener(v->{
-            if(taskInfoFragment!=null){
-                taskInfoFragment.actionSaveTask()
-                .subscribe(aVoid -> Finish());
+        actionTaskBtn.setOnClickListener(v -> {
+            if (taskInfoFragment != null) {
+                if(mTaskId!=null) {
+                    taskInfoFragment.actionUpdateTask(mTaskId)
+                    .subscribe(aVoid -> Finish("Update task successfully"));
+                }else{
+                    taskInfoFragment.actionSaveNewTask()
+                            .subscribe(aVoid -> Finish("Add task successfully"));
+                }
             }
         });
     }
@@ -61,9 +75,13 @@ public class TaskDetailActivity extends AppCompatActivity {
         return true;
     }
 
-    private void Finish(){
-        Toast.makeText(this,"Save task successfully",Toast.LENGTH_LONG).show();
-        new Handler().postDelayed(() -> finish(),500);
+    private void Finish(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        new Handler().postDelayed(() -> finish(), 500);
 
+    }
+
+    public String taskId() {
+        return mTaskId;
     }
 }

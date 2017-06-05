@@ -11,7 +11,7 @@ import tasks.sample.mysquar.com.mytasks.model.Task;
  * Created by phannguyen on 6/2/17.
  */
 
-@Database(entities = {Task.class}, version = 1)
+@Database(entities = {Task.class}, version = 2)
 public abstract class AppDB extends RoomDatabase {
     private static AppDB INSTANCE;
     private static Context _context;
